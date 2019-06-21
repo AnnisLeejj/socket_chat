@@ -55,7 +55,6 @@ public class ClientSearcher {
 
     private static void sendBroadcast() throws IOException {
         System.out.println("UDPSearcher sendBroadCast started.");
-
         //作为搜索方,让系统自动分配端口
         DatagramSocket ds = new DatagramSocket();
 
@@ -140,7 +139,6 @@ public class ClientSearcher {
                         System.out.println("UDPSearcher receive cmd:" + cmd + "\tserverPort:" + serverPort);
                         continue;
                     }
-
 
                     String sn = new String(buffer, minLen, dataLen - minLen);
                     ServerInfo info = new ServerInfo(sn, ip, serverPort);

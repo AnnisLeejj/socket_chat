@@ -100,7 +100,6 @@ public class ServerProvider {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
 
         private void close() {
