@@ -1,0 +1,6 @@
+rootProject.name = 'socket_chat'
+include 'lib-clink'
+include 'client'
+include 'server'
+include 'foo'
+
