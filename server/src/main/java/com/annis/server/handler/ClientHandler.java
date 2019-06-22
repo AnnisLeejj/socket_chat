@@ -50,7 +50,7 @@ public class ClientHandler {
 
     private void exitBySelf() {
         exit();
-
+        clientHandlerCallback.onSelfClose(this);
     }
 
     public interface ClientHandlerCallback {
@@ -86,8 +86,7 @@ public class ClientHandler {
                         break;
                     }
                     //打印到屏幕,并回送数据长度
-                    System.out.println("接收到消息(" + socket.getInetAddress() + ":" + socket.getPort() + "):" + str);
-
+                    ClientHandler.this.clientHandlerCallback.onNewMessageArrived(ClientHandler.this, str);
                 } while (!done);
             } catch (IOException e) {
                 if (!done) {

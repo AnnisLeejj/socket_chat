@@ -60,7 +60,6 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
 
     @Override
     public synchronized void onSelfClose(ClientHandler handler) {
-
         clientHandlerList.remove(handler);
     }
 
