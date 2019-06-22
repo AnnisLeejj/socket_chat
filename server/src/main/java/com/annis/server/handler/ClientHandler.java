@@ -16,20 +16,25 @@ public class ClientHandler {
     private final ClientReadHandler readHandler;
     private final ClientWriteHandler writeHandler;
     private final ClientHandlerCallback clientHandlerCallback;
+    private final String clientInfo;
 
     public ClientHandler(@NotNull Socket socket, @NotNull ClientHandlerCallback clientHandlerCallback) throws IOException {
         this.socket = socket;
         readHandler = new ClientReadHandler(socket.getInputStream());
         writeHandler = new ClientWriteHandler(socket.getOutputStream());
         this.clientHandlerCallback = clientHandlerCallback;
-        System.out.println("新客户端连接:" + socket.getInetAddress() + ":" + socket.getPort());
+        this.clientInfo = "A[" + socket.getInetAddress().getHostAddress()
+                + "]  P[" + socket.getPort() + "]";
+        System.out.println("新客户端连接:" + clientInfo);
 
     }
 
+    public String getClientInfo() {
+        return clientInfo;
+    }
 
     public void send(String message) {
         writeHandler.send(message);
-
     }
 
     public void readToPrint() {
@@ -114,8 +119,8 @@ public class ClientHandler {
         }
 
         void send(String message) {
-            if (!executorService.isShutdown())
-                executorService.execute(new WriteRunnable(message));
+            if (done) return;
+            executorService.execute(new WriteRunnable(message));
         }
 
         void exit() {
