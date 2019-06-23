@@ -2,6 +2,7 @@ package com.annis.client;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.channels.Selector;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,14 @@ public class ClientTest {
     private static boolean done;
 
     public static void main(String[] args) throws IOException {
+        performanceTest();
+        Selector selector;
+    }
+
+    /**
+     * 性能测试
+     */
+    private static void performanceTest() throws IOException {
         ServerInfo info = ClientSearcher.searchServer(10);
         System.out.println("Server:" + info);
         if (info == null)
@@ -27,7 +36,7 @@ public class ClientTest {
                 }
 
                 tcpClients.add(tcpClient);
-                System.out.println("连接成功:"+(++size));
+                System.out.println("连接成功:" + (++size));
             } catch (IOException e) {
                 System.out.println("连接异常");
             }
