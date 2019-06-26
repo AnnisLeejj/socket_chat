@@ -1,5 +1,6 @@
 package com.annis.server.handler;
 
+import com.annis.lib.core.Connector;
 import com.annis.lib.utils.CloseUtils;
 import com.sun.istack.internal.NotNull;
 
@@ -16,23 +17,37 @@ import java.util.concurrent.Executors;
  * 客户端消息处理
  */
 public class ClientHandler {
+    private final Connector connector;
     private final SocketChannel socketChannel;
-    private final ClientReadHandler readHandler;
     private final ClientWriteHandler writeHandler;
     private final ClientHandlerCallback clientHandlerCallback;
     private final String clientInfo;
 
     public ClientHandler(@NotNull SocketChannel socketChannel, @NotNull ClientHandlerCallback clientHandlerCallback) throws IOException {
         this.socketChannel = socketChannel;
-        socketChannel.configureBlocking(false);
 
-        Selector readSelector = Selector.open();
-        socketChannel.register(readSelector, SelectionKey.OP_READ);
+        connector = new Connector() {
+            @Override
+            public void onChannelClosed(SocketChannel channel) {
+                super.onChannelClosed(channel);
+                exitBySelf();
+            }
+
+            @Override
+            protected void onReceiveNewMessage(String msg) {
+                super.onReceiveNewMessage(msg);
+                clientHandlerCallback.onNewMessageArrived(ClientHandler.this, msg);
+            }
+        };
+
+        connector.setup(socketChannel);
+        //客户端信息读取
+//        Selector readSelector = Selector.open();
+//        socketChannel.register(readSelector, SelectionKey.OP_READ);
+//        readHandler = new ClientReadHandler(readSelector);
 
         Selector writeSelector = Selector.open();
         socketChannel.register(writeSelector, SelectionKey.OP_WRITE);
-
-        readHandler = new ClientReadHandler(readSelector);
         writeHandler = new ClientWriteHandler(writeSelector);
 
         this.clientHandlerCallback = clientHandlerCallback;
@@ -48,12 +63,8 @@ public class ClientHandler {
         writeHandler.send(message);
     }
 
-    public void readToPrint() {
-        readHandler.start();
-    }
-
     public void exit() {
-        readHandler.exit();
+        CloseUtils.close(connector);
         writeHandler.exit();
         CloseUtils.close(socketChannel);
         System.out.println("客户端已退出:" + clientInfo);
@@ -72,7 +83,9 @@ public class ClientHandler {
         void onNewMessageArrived(ClientHandler handler, String msg);
     }
 
-
+    /**
+     * 读取客服端发送来的信息
+     */
     class ClientReadHandler extends Thread {
         private boolean done = false;
         private final Selector readSelector;
@@ -140,6 +153,9 @@ public class ClientHandler {
         }
     }
 
+    /**
+     * 向客户端发送信息
+     */
     class ClientWriteHandler {
         private boolean done = false;
         private final ExecutorService executorService;
@@ -167,7 +183,7 @@ public class ClientHandler {
             private final String msg;
 
             WriteRunnable(String msg) {
-                this.msg = msg+"\n";
+                this.msg = msg + "\n";
             }
 
             @Override

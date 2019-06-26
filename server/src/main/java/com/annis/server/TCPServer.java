@@ -135,7 +135,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
                                 //客户端构建异步线程
                                 ClientHandler clientHandler = new ClientHandler(socketChannel, TCPServer.this);
                                 //读取信息并打印
-                                clientHandler.readToPrint();
+                                //clientHandler.readToPrint();
 
                                 synchronized (TCPServer.this) {
                                     clientHandlerList.add(clientHandler);

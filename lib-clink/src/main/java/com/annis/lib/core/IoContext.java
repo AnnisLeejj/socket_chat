@@ -3,7 +3,7 @@ package com.annis.lib.core;
 import java.io.Closeable;
 import java.io.IOException;
 
-public class IoContext implements Closeable {
+public class IoContext {
     private static IoContext INSTANCE;
     private final IoProvider ioProvider;
 
@@ -23,8 +23,12 @@ public class IoContext implements Closeable {
         return new StartedBoot();
     }
 
-    @Override
-    public void close() throws IOException {
+    public static void close() throws IOException {
+        if (INSTANCE != null)
+            INSTANCE.callClose();
+    }
+
+    public void callClose() throws IOException {
         ioProvider.close();
     }
 

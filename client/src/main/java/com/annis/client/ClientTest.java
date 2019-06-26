@@ -1,8 +1,7 @@
 package com.annis.client;
 
 import java.io.IOException;
-import java.net.*;
-import java.nio.channels.Selector;
+import java.net.*; 
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,7 @@ public class ClientTest {
 
     public static void main(String[] args) throws IOException {
         performanceTest();
-        Selector selector;
+       // Selector selector;
     }
 
     /**
@@ -27,7 +26,7 @@ public class ClientTest {
 
         final List<TCPClient> tcpClients = new ArrayList<>();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100; i++) {
             try {
                 TCPClient tcpClient = TCPClient.startWith(info);
                 if (tcpClient == null) {
