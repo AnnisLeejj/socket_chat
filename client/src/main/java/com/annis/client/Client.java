@@ -22,7 +22,6 @@ public class Client {
                 }
             }
         }
-
     }
 
     private static void write(Socket client) throws IOException {

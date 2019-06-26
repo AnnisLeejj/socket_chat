@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -81,7 +82,6 @@ public class ClientSearcher {
         System.out.println("UDPSearcher sendBroadcast finished.");
     }
 
-
     private static class Listener extends Thread {
         private final int listenPort;
         private final CountDownLatch startDownLatch;
@@ -92,7 +92,6 @@ public class ClientSearcher {
         private final int minLen = UDPConstants.HEADER.length + 2 + 4;
         private boolean done = false;
         private DatagramSocket ds = null;
-
 
         private Listener(int listenPort, CountDownLatch startDownLatch, CountDownLatch receiveDownLatch) {
             super();

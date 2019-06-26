@@ -1,10 +1,11 @@
 package com.annis.lib.core;
 
 import java.io.Closeable;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SocketChannel;
 
 public interface IoProvider extends Closeable {
-    boolean registerInput(SocketChannel channel, HandleInputCallback callback);
+    boolean registerInput(SocketChannel channel, HandleInputCallback callback) throws ClosedChannelException;
 
     boolean registerOutput(SocketChannel channel, HandleOutputCallback callback);
 
