@@ -1,6 +1,5 @@
 package com.annis.lib.core;
 
-import java.io.Closeable;
 import java.io.IOException;
 
 public class IoContext {

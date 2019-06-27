@@ -208,7 +208,7 @@ public class ClientHandler {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    ClientHandler.this.exitBySelf();
                 }
             }
         }

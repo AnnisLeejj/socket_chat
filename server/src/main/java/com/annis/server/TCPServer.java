@@ -60,18 +60,14 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
         CloseUtils.close(selector);
 
         synchronized (TCPServer.this) {
-            clientHandlerList.forEach(client -> {
-                client.exit();
-            });
+            clientHandlerList.forEach(ClientHandler::exit);
             clientHandlerList.clear();
         }
         forwardingTHreadPoolExecutor.shutdownNow();
     }
 
     public synchronized void broadcast(String message) {
-        clientHandlerList.forEach(client -> {
-            client.send(message);
-        });
+        clientHandlerList.forEach(client -> client.send(message));
     }
 
     @Override
@@ -82,8 +78,7 @@ public class TCPServer implements ClientHandler.ClientHandlerCallback {
     @Override
     public void onNewMessageArrived(ClientHandler handler, String msg) {
         //打印到屏幕
-        System.out.println("Received(" + handler.getClientInfo() + "):" + msg);
-
+        //System.out.println("Received(" + handler.getClientInfo() + "):" + msg);
         //不能阻塞
         forwardingTHreadPoolExecutor.execute(() -> {
             synchronized (TCPServer.this) {

@@ -15,6 +15,10 @@ import java.util.UUID;
 public class ServerProvider {
     private static Provider PROVIDER_INSTANCE;
 
+    /**
+     *
+     * @param port TCP-Socket 端口
+     */
     static void start(int port) {
         stop();
         String sn = UUID.randomUUID().toString();
@@ -56,7 +60,7 @@ public class ServerProvider {
                     ds.receive(receivePack);
                     //打印接收到的信息与发送者的信息
                     //发送者的IP地址
-                    String clienIP = receivePack.getAddress().getHostAddress();
+                    String clientIP = receivePack.getAddress().getHostAddress();
                     int clientPort = receivePack.getPort();
                     int clientDataLen = receivePack.getData().length;
                     byte[] clientData = receivePack.getData();
@@ -64,7 +68,7 @@ public class ServerProvider {
                             && ByteUtils.startsWith(clientData, UDPConstants.HEADER);
 
                     System.out.println("ServerProvider receive form ip:" +
-                            clienIP + ":" + clientPort + "\t dataValid:" + isValid);
+                            clientIP + ":" + clientPort + "\t dataValid:" + isValid);
                     if (!isValid) {
                         //无效 继续
                         continue;
@@ -92,7 +96,7 @@ public class ServerProvider {
                         DatagramPacket responsePacket = new DatagramPacket(buffer, len,
                                 receivePack.getAddress(), responsePort);
                         ds.send(responsePacket);
-                        System.out.println("ServerProvider response to:" + clienIP + ":" + clientPort + "\tdataLen:" + len);
+                        System.out.println("ServerProvider response to:" + clientIP + ":" + clientPort + "\tdataLen:" + len);
                     } else {
                         System.out.println("ServerProvider receive cmd nonsupport; cmd:" + cmd + "\t port:" + port);
                     }

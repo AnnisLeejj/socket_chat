@@ -47,7 +47,12 @@ public class ClientTest {
             }
         }
 
-        System.in.read();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Runnable runnable = () -> {
             while (!done) {
                 tcpClients.forEach(e -> {
