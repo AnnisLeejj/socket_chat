@@ -16,58 +16,56 @@ import java.util.concurrent.Executors;
 /**
  * 客户端消息处理
  */
-public class ClientHandler {
-    private final Connector connector;
-    private final SocketChannel socketChannel;
-    private final ClientWriteHandler writeHandler;
+public class ClientHandler extends Connector {
+    //    private final Connector connector;
+    //    private final SocketChannel socketChannel;
+//    private final ClientWriteHandler writeHandler;
     private final ClientHandlerCallback clientHandlerCallback;
     private final String clientInfo;
 
     public ClientHandler(@NotNull SocketChannel socketChannel, @NotNull ClientHandlerCallback clientHandlerCallback) throws IOException {
-        this.socketChannel = socketChannel;
+//        this.socketChannel = socketChannel;
+        this.clientInfo = socketChannel.getRemoteAddress().toString();
 
-        connector = new Connector() {
-            @Override
-            public void onChannelClosed(SocketChannel channel) {
-                super.onChannelClosed(channel);
-                exitBySelf();
-            }
+        this.clientHandlerCallback = clientHandlerCallback;
 
-            @Override
-            protected void onReceiveNewMessage(String msg) {
-                super.onReceiveNewMessage(msg);
-                clientHandlerCallback.onNewMessageArrived(ClientHandler.this, msg);
-            }
-        };
+        setup(socketChannel);
 
-        connector.setup(socketChannel);
+//        connector = new Connector() {
+//            @Override
+//            public void onChannelClosed(SocketChannel channel) {
+//                super.onChannelClosed(channel);
+//                exitBySelf();
+//            }
+//
+//            @Override
+//            protected void onReceiveNewMessage(String msg) {
+//                super.onReceiveNewMessage(msg);
+//                clientHandlerCallback.onNewMessageArrived(ClientHandler.this, msg);
+//            }
+//        };
+//        connector.setup(socketChannel);
         //客户端信息读取
 //        Selector readSelector = Selector.open();
 //        socketChannel.register(readSelector, SelectionKey.OP_READ);
 //        readHandler = new ClientReadHandler(readSelector);
 
-        Selector writeSelector = Selector.open();
-        socketChannel.register(writeSelector, SelectionKey.OP_WRITE);
-        writeHandler = new ClientWriteHandler(writeSelector);
+//        Selector writeSelector = Selector.open();
+//        socketChannel.register(writeSelector, SelectionKey.OP_WRITE);
+//        writeHandler = new ClientWriteHandler(writeSelector);
 
-        this.clientHandlerCallback = clientHandlerCallback;
-        this.clientInfo = socketChannel.getRemoteAddress().toString();
+
         System.out.println("新客户端连接:" + clientInfo);
     }
 
-    public String getClientInfo() {
-        return clientInfo;
-    }
+//    public void send(String message) {
+//        writeHandler.send(message);
+//    }
 
-    public void send(String message) {
-        writeHandler.send(message);
-    }
-
-    public void exit() {
-        CloseUtils.close(connector);
-        writeHandler.exit();
-        CloseUtils.close(socketChannel);
-        System.out.println("客户端已退出:" + clientInfo);
+    @Override
+    public void onChannelClosed(SocketChannel channel) {
+        super.onChannelClosed(channel);
+        exitBySelf();
     }
 
     private void exitBySelf() {
@@ -75,7 +73,21 @@ public class ClientHandler {
         clientHandlerCallback.onSelfClose(this);
     }
 
+    public void exit() {
+        CloseUtils.close(this);
+        // writeHandler.exit();
+        // CloseUtils.close(socketChannel);
+        System.out.println("客户端已退出:" + clientInfo);
+    }
+
+    @Override
+    protected void onReceiveNewMessage(String msg) {
+        super.onReceiveNewMessage(msg);
+        clientHandlerCallback.onNewMessageArrived(this,msg);
+    }
+
     public interface ClientHandlerCallback {
+
         //自身关闭通知
         void onSelfClose(ClientHandler handler);
 
@@ -118,7 +130,7 @@ public class ClientHandler {
                             //读取时,清空上次读取内容
                             int read = client.read(byteBuffer);
                             if (read >= 0) {
-                                // assert read == byteBuffer.position();
+                                // assert readFrom == byteBuffer.position();
                                 // -1 是为了丢弃换行符
                                 String str = new String(byteBuffer.array(), 0, read - 1);
 
@@ -199,7 +211,7 @@ public class ClientHandler {
                     //如果这个时候发送,则会 发送 从当前的 position 到byteBuffer 结尾的数据
                     byteBuffer.flip();
                     while (!done && byteBuffer.hasRemaining()) {
-                        int len = socketChannel.write(byteBuffer);
+                        int len = 0;//socketChannel.write(byteBuffer);
                         //len==0 是合法的, socketChannel 可能不能及时响应
                         if (len < 0) {//一定是有异常
                             System.out.println("客户端已无法发送数据!");

@@ -1,10 +1,38 @@
 package com.annis.client;
 
+import com.annis.lib.core.IoContext;
+import com.annis.lib.impl.IoSelectorProvider;
+
 import java.io.*;
 import java.net.Socket;
 
 public class Client {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+        //oldLogic();
+
+        IoContext.setup().ioProvider(new IoSelectorProvider())
+                .start();
+        ServerInfo info = ClientSearcher.searchServer(10);
+        System.out.println("Server:" + info);
+
+        if (info != null) {
+            TCPClient tcpClient = null;
+            try {
+                tcpClient = TCPClient.startWith(info);
+                if (tcpClient == null) return;
+                write(tcpClient);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (tcpClient != null) {
+                    tcpClient.exit();
+                }
+            }
+        }
+        IoContext.close();
+    }
+
+    private void oldLogic() {
         ServerInfo info = ClientSearcher.searchServer(10);
         System.out.println("Server:" + info);
 
@@ -57,6 +85,9 @@ public class Client {
             //键盘读取一行
             String str = input.readLine();
             //发送到服务器
+            tcpClient.send(str);
+            tcpClient.send(str);
+            tcpClient.send(str);
             tcpClient.send(str);
 
             if ("00bye00".equalsIgnoreCase(str)) {
