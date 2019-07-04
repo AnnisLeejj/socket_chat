@@ -31,7 +31,7 @@ public class IoArgs {
      * @return
      */
     public int writeTo(byte[] bytes, int offset) {
-        int size = Math.max(bytes.length - offset, buffer.remaining());
+        int size = Math.min(bytes.length - offset, buffer.remaining());
         buffer.get(bytes, offset, size);
         return size;
     }
@@ -61,10 +61,6 @@ public class IoArgs {
 
     /**
      * 写数据到SocketChannel
-     *
-     * @param channel
-     * @return
-     * @throws IOException
      */
     public int writeTo(SocketChannel channel) throws IOException {
         int bytesProduced = 0;
@@ -93,11 +89,6 @@ public class IoArgs {
     public void finishWriting() {
         buffer.flip();
     }
-
-//    public String bufferString() {
-//        //丢弃换行符
-//        return new String(byteBuffer, 0, buffer.position() - 1);
-//    }
 
     /**
      * 设置单次写操作的容纳区间

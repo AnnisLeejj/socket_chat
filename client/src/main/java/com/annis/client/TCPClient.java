@@ -31,7 +31,6 @@ public class TCPClient extends Connector {
 //            printStream.println(msg);
 //        }
 //    }
-
     @Override
     public void onChannelClosed(SocketChannel channel) {
         super.onChannelClosed(channel);
@@ -50,7 +49,6 @@ public class TCPClient extends Connector {
         try {
 //            ReadHandler readHandler = new ReadHandler(socket.getInputStream());
 //            readHandler.start();
-
             return new TCPClient(socketChannel);
         } catch (Exception e) {
             System.out.println("异常关闭");
@@ -87,7 +85,6 @@ public class TCPClient extends Connector {
                     }
                     //打印到屏幕,并回送数据长度
                     System.out.println("接收到 服务器消息:" + str);
-
                 } while (!done);
             } catch (IOException e) {
                 if (!done) {

@@ -23,44 +23,13 @@ public class ClientHandler extends Connector {
     private final ClientHandlerCallback clientHandlerCallback;
     private final String clientInfo;
 
-    public ClientHandler(@NotNull SocketChannel socketChannel, @NotNull ClientHandlerCallback clientHandlerCallback) throws IOException {
-//        this.socketChannel = socketChannel;
+    public ClientHandler(SocketChannel socketChannel, ClientHandlerCallback clientHandlerCallback) throws IOException {
+        this.clientHandlerCallback = clientHandlerCallback;
         this.clientInfo = socketChannel.getRemoteAddress().toString();
 
-        this.clientHandlerCallback = clientHandlerCallback;
-
-        setup(socketChannel);
-
-//        connector = new Connector() {
-//            @Override
-//            public void onChannelClosed(SocketChannel channel) {
-//                super.onChannelClosed(channel);
-//                exitBySelf();
-//            }
-//
-//            @Override
-//            protected void onReceiveNewMessage(String msg) {
-//                super.onReceiveNewMessage(msg);
-//                clientHandlerCallback.onNewMessageArrived(ClientHandler.this, msg);
-//            }
-//        };
-//        connector.setup(socketChannel);
-        //客户端信息读取
-//        Selector readSelector = Selector.open();
-//        socketChannel.register(readSelector, SelectionKey.OP_READ);
-//        readHandler = new ClientReadHandler(readSelector);
-
-//        Selector writeSelector = Selector.open();
-//        socketChannel.register(writeSelector, SelectionKey.OP_WRITE);
-//        writeHandler = new ClientWriteHandler(writeSelector);
-
-
         System.out.println("新客户端连接:" + clientInfo);
+        setup(socketChannel);
     }
-
-//    public void send(String message) {
-//        writeHandler.send(message);
-//    }
 
     @Override
     public void onChannelClosed(SocketChannel channel) {
@@ -75,15 +44,13 @@ public class ClientHandler extends Connector {
 
     public void exit() {
         CloseUtils.close(this);
-        // writeHandler.exit();
-        // CloseUtils.close(socketChannel);
         System.out.println("客户端已退出:" + clientInfo);
     }
 
     @Override
     protected void onReceiveNewMessage(String msg) {
         super.onReceiveNewMessage(msg);
-        clientHandlerCallback.onNewMessageArrived(this,msg);
+        clientHandlerCallback.onNewMessageArrived(this, msg);
     }
 
     public interface ClientHandlerCallback {

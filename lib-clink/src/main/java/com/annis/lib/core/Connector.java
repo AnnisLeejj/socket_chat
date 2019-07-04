@@ -28,13 +28,11 @@ public class Connector implements Closeable, SocketChannelAdapter.OnChannelStatu
         this.sender = adapter;
         this.receiver = adapter;
 
-
         sendDispatcher = new AsyncSendDispatcher(sender);
         receiveDispatcher = new AsyncReceiveDispatcher(receiver, receivePacketCallback);
-//        readNextMessage();
-
         //启动接收
         receiveDispatcher.start();
+//        readNextMessage();
     }
 
     /**
@@ -62,11 +60,10 @@ public class Connector implements Closeable, SocketChannelAdapter.OnChannelStatu
 
     @Override
     public void close() throws IOException {
-        sendDispatcher.close();
         receiveDispatcher.close();
+        sendDispatcher.close();
         sender.close();
         receiver.close();
-
         channel.close();
     }
 

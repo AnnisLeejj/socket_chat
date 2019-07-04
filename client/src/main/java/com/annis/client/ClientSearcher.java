@@ -45,10 +45,10 @@ public class ClientSearcher {
         return null;
     }
 
-    private static Listener listen(CountDownLatch recerveLatch) throws InterruptedException {
+    private static Listener listen(CountDownLatch receiveLatch) throws InterruptedException {
         System.out.println("UDPSearcher start listen.");
         CountDownLatch startDownLatch = new CountDownLatch(1);
-        Listener listener = new Listener(LISTEN_PORT, startDownLatch, recerveLatch);
+        Listener listener = new Listener(LISTEN_PORT, startDownLatch, receiveLatch);
         listener.start();
         startDownLatch.await();
         return listener;

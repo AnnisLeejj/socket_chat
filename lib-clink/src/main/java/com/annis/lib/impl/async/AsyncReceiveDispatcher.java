@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AsyncReceiveDispatcher implements ReceiveDispatcher {
     private final AtomicBoolean isCLose = new AtomicBoolean(false);
+
     private final Receiver receiver;
     private final ReceivePacketCallback callback;
 
@@ -37,6 +38,9 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
 
     }
 
+    private void closeAndeeNotify() {
+        CloseUtils.close(this);
+    }
 
     private void registerReceive() {
         try {
@@ -46,14 +50,10 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
         }
     }
 
-    private void closeAndeeNotify() {
-        CloseUtils.close(this);
-    }
-
     @Override
     public void close() throws IOException {
         if (isCLose.compareAndSet(false, true)) {
-            ReceivePacket packet = this.packetTemp;
+            ReceivePacket packet = packetTemp;
             if (packet != null) {
                 packetTemp = null;
                 CloseUtils.close(packet);
@@ -82,7 +82,6 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
         }
     };
 
-
     /**
      * 解析数据到Packet
      *
@@ -100,6 +99,8 @@ public class AsyncReceiveDispatcher implements ReceiveDispatcher {
         if (count > 0) {
             packetTemp.save(buffer, count);
             position += count;
+
+            //检查是否完成一份Packet接收
             if (position == total) {
                 completePacket();
                 packetTemp = null;
